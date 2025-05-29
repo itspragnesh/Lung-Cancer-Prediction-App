@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lung Cancer Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            margin-top: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00796b;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #004d40;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="number"] {
+            padding: 12px;
+            border: 2px solid #b0bec5;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: #00796b;
+            box-shadow: 0 0 8px rgba(0, 121, 107, 0.3);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(90deg, #00796b, #004d40);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 121, 107, 0.4);
+        }
+
+        .result, .error {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .result {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lung Cancer Detection</h1>
+        <form action="/predict" method="post" onsubmit="return validateForm()">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required aria-label="Select gender">
+                <option value="" disabled selected>Select Gender</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+            </select>
+
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="1" required aria-label="Enter age">
+
+            <label for="smoking">Smoking</label>
+            <select id="smoking" name="smoking" required aria-label="Smoking status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="yellow_fingers">Yellow Fingers</label>
+            <select id="yellow_fingers" name="yellow_fingers" required aria-label="Yellow fingers status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="anxiety">Anxiety</label>
+            <select id="anxiety" name="anxiety" required aria-label="Anxiety status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="peer_pressure">Peer Pressure</label>
+            <select id="peer_pressure" name="peer_pressure" required aria-label="Peer pressure status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="chronic_disease">Chronic Disease</label>
+            <select id="chronic_disease" name="chronic_disease" required aria-label="Chronic disease status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="fatigue">Fatigue</label>
+            <select id="fatigue" name="fatigue" required aria-label="Fatigue status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="allergy">Allergy</label>
+            <select id="allergy" name="allergy" required aria-label="Allergy status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="wheezing">Wheezing</label>
+            <select id="wheezing" name="wheezing" required aria-label="Wheezing status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="alcohol_consuming">Alcohol Consumption</label>
+            <select id="alcohol_consuming" name="alcohol_consuming" required aria-label="Alcohol consumption status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="coughing">Coughing</label>
+            <select id="coughing" name="coughing" required aria-label="Coughing status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="shortness_of_breath">Shortness of Breath</label>
+            <select id="shortness_of_breath" name="shortness_of_breath" required aria-label="Shortness of breath status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="swallowing_difficulty">Swallowing Difficulty</label>
+            <select id="swallowing_difficulty" name="swallowing_difficulty" required aria-label="Swallowing difficulty status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="chest_pain">Chest Pain</label>
+            <select id="chest_pain" name="chest_pain" required aria-label="Chest pain status">
+                <option value="" disabled selected>Select Option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if prediction_text %}
+        <div class="{% if 'Error' in prediction_text %}error{% else %}result{% endif %}">
+            {{ prediction_text }}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        function validateForm() {
+            const age = document.getElementById('age').value;
+            if (age <= 0) {
+                alert('Age must be a positive number');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

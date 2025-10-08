@@ -213,5 +213,4 @@ See the [LICENSE](LICENSE) file for details.
 
 ---
 
-> For issues or questions, open a GitHub Issue!  
-> 🚀 *Made with ❤️ by Pragnesh*
+

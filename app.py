@@ -11,11 +11,9 @@ import joblib
 
 app = Flask(__name__)
 
-
 MODEL_PATH = 'xgboost_model.pkl'
 GENDER_ENCODER_PATH = 'gender_encoder.pkl'
 CANCER_ENCODER_PATH = 'cancer_encoder.pkl'
-
 
 def load_and_preprocess_data():
     try:
@@ -24,7 +22,6 @@ def load_and_preprocess_data():
         print("Error: lung_cancer.csv not found. Please ensure the dataset is in the same directory.")
         return None, None, None, None
 
-
     required_columns = ['GENDER', 'AGE', 'SMOKING', 'YELLOW_FINGERS', 'ANXIETY', 'PEER_PRESSURE',
                        'CHRONIC_DISEASE', 'FATIGUE', 'ALLERGY', 'WHEEZING', 'ALCOHOL_CONSUMING',
                        'COUGHING', 'SHORTNESS_OF_BREATH', 'SWALLOWING_DIFFICULTY', 'CHEST_PAIN', 'LUNG_CANCER']
@@ -32,7 +29,6 @@ def load_and_preprocess_data():
         print("Error: Dataset missing required columns.")
         return None, None, None, None
 
-   
     print("Dataset Info:")
     print(data.info())
     print("\nDataset Summary Statistics:")
@@ -43,27 +39,21 @@ def load_and_preprocess_data():
     print(data.tail())
     print(f"\nDataset Shape: {data.shape}")
 
-
     le_gender = LabelEncoder()
     le_cancer = LabelEncoder()
     data['GENDER'] = le_gender.fit_transform(data['GENDER'])
     data['LUNG_CANCER'] = le_cancer.fit_transform(data['LUNG_CANCER'])
 
-    
     joblib.dump(le_gender, GENDER_ENCODER_PATH)
     joblib.dump(le_cancer, CANCER_ENCODER_PATH)
 
-   
     X = data.drop('LUNG_CANCER', axis=1)
     y = data['LUNG_CANCER']
 
     return X, y, le_gender, le_cancer
 
-
 def train_model(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
-    
     model = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
     model.fit(X_train, y_train)
 
@@ -91,6 +81,7 @@ def train_model(X, y):
 
     return model, X_test, y_test
 
+
 def load_model_and_encoders():
     try:
         model = joblib.load(MODEL_PATH)
@@ -102,11 +93,9 @@ def load_model_and_encoders():
         print("Model or encoders not found. Training new model...")
         return None, None, None
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -116,12 +105,12 @@ def predict():
         if model is None:
             return render_template('index.html', prediction_text='Error: Model not found. Please train the model first.')
 
-  
+
         gender = request.form['gender']
         if gender not in ['M', 'F']:
             return render_template('index.html', prediction_text='Error: Invalid gender value. Use M or F.')
 
-        
+      
         yes_no_map = {'No': 1, 'Yes': 2}
         features = [
             gender,
@@ -146,15 +135,15 @@ def predict():
             if val not in [1, 2]:
                 return render_template('index.html', prediction_text=f'Error: Invalid value for feature {i-1}. Use Yes or No.')
 
-       
+
         if features[1] <= 0:
             return render_template('index.html', prediction_text='Error: Age must be positive.')
 
-       
+     
         features[0] = le_gender.transform([features[0]])[0]
         features = np.array(features).reshape(1, -1)
 
-        
+    
         prediction = model.predict(features)[0]
         prediction_text = le_cancer.inverse_transform([prediction])[0]
 
@@ -166,10 +155,9 @@ def predict():
 
 
 if __name__ == '__main__':
-  
+   
     if not os.path.exists('static'):
         os.makedirs('static')
-
     if not os.path.exists(MODEL_PATH):
         print("Training new model...")
         X, y, le_gender, le_cancer = load_and_preprocess_data()
@@ -181,5 +169,5 @@ if __name__ == '__main__':
     else:
         print(f"Model already exists at {MODEL_PATH}. Using saved model.")
 
-  
+ 
     app.run(debug=True)
